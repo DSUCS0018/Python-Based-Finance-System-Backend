@@ -52,22 +52,49 @@ def filter_transactions(
 def get_summary(db: Session = Depends(get_db)):
     return crud.get_summary(db)
 
+
+@app.get("/transactions/filter/")
+def filter_transactions(
+    category: str = None,
+    transaction_type: str = None,
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db)
+):
+    return crud.filter_transactions(db, category, transaction_type, start_date, end_date)
+
+def get_role(role: str):
+    return role
+
 @app.delete("/transactions/{transaction_id}")
-def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
+def delete_transaction(
+    transaction_id: int,
+    role: str,
+    db: Session = Depends(get_db)
+):
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can delete transactions")
+
     transaction = crud.delete_transaction(db, transaction_id)
-    
+
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
-    
+
     return {"message": "Transaction deleted successfully"}
 
-
-
 @app.put("/transactions/{transaction_id}")
-def update_transaction(transaction_id: int, updated_data: schemas.TransactionCreate, db: Session = Depends(get_db)):
+def update_transaction(
+    transaction_id: int,
+    updated_data: schemas.TransactionCreate,
+    role: str,
+    db: Session = Depends(get_db)
+):
+    if role not in ["admin", "analyst"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
     transaction = crud.update_transaction(db, transaction_id, updated_data)
-    
+
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
-    
+
     return transaction

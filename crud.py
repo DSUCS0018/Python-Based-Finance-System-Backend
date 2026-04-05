@@ -78,3 +78,26 @@ def update_transaction(db: Session, transaction_id: int, updated_data: schemas.T
         db.refresh(transaction)
     
     return transaction
+
+def filter_transactions(
+    db: Session,
+    category: str = None,
+    transaction_type: str = None,
+    start_date: str = None,
+    end_date: str = None
+):
+    query = db.query(models.Transaction)
+
+    if category:
+        query = query.filter(models.Transaction.category == category)
+
+    if transaction_type:
+        query = query.filter(models.Transaction.transaction_type == transaction_type)
+
+    if start_date:
+        query = query.filter(models.Transaction.date >= start_date)
+
+    if end_date:
+        query = query.filter(models.Transaction.date <= end_date)
+
+    return query.all()

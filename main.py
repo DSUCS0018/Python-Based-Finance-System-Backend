@@ -40,13 +40,6 @@ def create_transaction(transaction: schemas.TransactionCreate, db: Session = Dep
 def get_transactions(db: Session = Depends(get_db)):
     return crud.get_transactions(db)
 
-@app.get("/transactions/filter/")
-def filter_transactions(
-    category: str = None,
-    transaction_type: str = None,
-    db: Session = Depends(get_db)
-):
-    return crud.filter_transactions(db, category, transaction_type)
 
 @app.get("/summary/")
 def get_summary(db: Session = Depends(get_db)):

@@ -33,16 +33,6 @@ def get_transactions(db: Session):
     return db.query(models.Transaction).all()
 
 
-def filter_transactions(db: Session, category: str = None, transaction_type: str = None):
-    query = db.query(models.Transaction)
-
-    if category:
-        query = query.filter(models.Transaction.category == category)
-
-    if transaction_type:
-        query = query.filter(models.Transaction.transaction_type == transaction_type)
-
-    return query.all()
 
 def get_summary(db: Session):
     transactions = db.query(models.Transaction).all()
